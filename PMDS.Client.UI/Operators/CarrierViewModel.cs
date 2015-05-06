@@ -1,4 +1,5 @@
-﻿using Common.Interfaces;
+﻿using System.Windows.Media;
+using Common.Interfaces;
 using PDMS.Client.AppServices.Caching.Drivers;
 
 namespace PMDS.Client.UI.Operators
@@ -11,5 +12,6 @@ namespace PMDS.Client.UI.Operators
         }
 
         public string Title { get { return "Carrier"; } }
+        public Color TitleColor { get { return Colors.Blue; } }
     }
 }
