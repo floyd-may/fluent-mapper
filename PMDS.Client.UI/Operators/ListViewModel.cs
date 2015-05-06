@@ -110,17 +110,6 @@ namespace PMDS.Client.UI.Operators
             set { _obsHideInactive.OnNext(value); }
         }
 
-        private IOperatorViewModel CreateOperatorViewModel(TOperator @operator)
-        {
-            if (@operator.IsDriverRecord)
-            {
-                return new DriverViewModel<TEquipment>(@operator);
-            }
-            
-            return new CarrierViewModel<TEquipment>(@operator);
-
-        }
-
         private IEnumerable<IOperatorViewModel> SortOperators(
             IEnumerable<IOperatorViewModel> ops,
             string sortProperty,

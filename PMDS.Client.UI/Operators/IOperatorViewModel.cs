@@ -7,6 +7,8 @@
         string EmployeeId { get; }
         string Phone { get; }
         bool IsActive { get; }
+        byte[] Photo { get; }
+        bool IsHazmatCertified { get; }
 
         bool PassesFilter(string filterText);
     }

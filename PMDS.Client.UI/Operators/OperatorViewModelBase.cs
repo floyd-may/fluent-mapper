@@ -1,4 +1,9 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using PDMS.Client.AppServices.Caching.Drivers;
 
 namespace PMDS.Client.UI.Operators
@@ -17,6 +22,8 @@ namespace PMDS.Client.UI.Operators
         public string EmployeeId { get { return _operator.EmployeeId; } }
         public string Phone { get { return _operator.Phone; } }
         public bool IsActive { get { return _operator.IsActive; } }
+        public bool IsHazmatCertified { get { return _operator.IsHazmatCertified; } }
+        public byte[] Photo { get { return _operator.Photo; } }
 
         public bool PassesFilter(string filterText)
         {
