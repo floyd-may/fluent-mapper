@@ -1,4 +1,6 @@
-﻿namespace PMDS.Client.UI.Operators
+﻿using System;
+
+namespace PMDS.Client.UI.Operators
 {
     public interface IOperatorViewModel
     {
@@ -11,6 +13,10 @@
         bool IsHazmatCertified { get; }
 
         bool PassesFilter(string filterText);
+
+        void Edit();
+
+        event EventHandler Edited;
     }
 
     public interface ICarrierViewModel : IOperatorViewModel

@@ -70,7 +70,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Operators\CarrierViewModel.cs" />
+    <Compile Include="Operators\ICarrierEditor.cs" />
     <Compile Include="Operators\DriverViewModel.cs" />
+    <Compile Include="Operators\IDriverEditor.cs" />
     <Compile Include="Operators\IOperatorViewModel.cs" />
     <Compile Include="Operators\IOperatorViewModelFactory.cs" />
     <Compile Include="Operators\ListViewModel.cs" />

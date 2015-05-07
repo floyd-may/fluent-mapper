@@ -1,5 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -10,12 +14,16 @@ namespace PMDS.Client.UI.Operators
 {
     public abstract class OperatorViewModelBase<TEquipment> : IOperatorViewModel
     {
-        private readonly ICacheableDriver<TEquipment> _operator;
+        protected readonly ICacheableDriver<TEquipment> _operator;
+        private readonly IScheduler _scheduler;
 
-        protected OperatorViewModelBase(ICacheableDriver<TEquipment> @operator)
+        protected OperatorViewModelBase(ICacheableDriver<TEquipment> @operator, IScheduler scheduler)
         {
             _operator = @operator;
+            _scheduler = scheduler;
         }
+
+        public event EventHandler Edited;
 
         public string FirstName { get { return _operator.FirstName; } }
         public string LastName { get { return _operator.LastName; } }
@@ -35,5 +43,20 @@ namespace PMDS.Client.UI.Operators
                 .Where(x => x != null)
                 .Any(x => x.ToUpper().Contains(upperFilterText));
         }
+
+        public void Edit()
+        {
+            Observable.FromAsync(DoEdit)
+                .ObserveOn(_scheduler)
+                .Where(x => x)
+                .Subscribe(x =>
+                {
+                    var handler = Edited;
+                    if (null != handler)
+                        handler(this, EventArgs.Empty);
+                });
+        }
+
+        protected abstract Task<bool> DoEdit();
     }
 }

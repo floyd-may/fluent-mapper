@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -13,10 +14,10 @@ namespace PMDS.Client.UI.Operators
     public class ListViewModel<TOperator, TEquipment> : ViewModelBase<ListViewModel<TOperator, TEquipment>>
         where TOperator : ICacheableDriver<TEquipment>
     {
-        private readonly ICache<TOperator> _driversCache;
+        private readonly IInvalidatable<TOperator> _driversCache;
         private readonly IOperatorViewModelFactory<TOperator, TEquipment> _operatorViewModelFactory;
 
-        private readonly AsyncSubject<IEnumerable<IOperatorViewModel>> _obsTaskOperators;
+        private readonly BehaviorSubject<IEnumerable<IOperatorViewModel>> _obsTaskOperators;
         private readonly BehaviorSubject<string> _obsFilterText;
         private readonly BehaviorSubject<string> _obsSortProp;
         private readonly BehaviorSubject<bool> _obsSortDescending;
@@ -24,7 +25,7 @@ namespace PMDS.Client.UI.Operators
         private readonly BehaviorSubject<IEnumerable<IOperatorViewModel>> _obsOperators; 
 
         public ListViewModel(
-            ICache<TOperator> driversCache,
+            IInvalidatable<TOperator> driversCache,
             IOperatorViewModelFactory<TOperator, TEquipment> operatorViewModelFactory, 
             IScheduler scheduler
             )
@@ -33,7 +34,7 @@ namespace PMDS.Client.UI.Operators
             _driversCache = driversCache;
             _operatorViewModelFactory = operatorViewModelFactory;
 
-            _obsTaskOperators = new AsyncSubject<IEnumerable<IOperatorViewModel>>();
+            _obsTaskOperators = new BehaviorSubject<IEnumerable<IOperatorViewModel>>(new IOperatorViewModel[0]);
 
             _obsHideInactive = new BehaviorSubject<bool>(true);
             PropertyChangeFromObservable(x => x.HideInactive, x => { }, _obsHideInactive);
@@ -56,6 +57,7 @@ namespace PMDS.Client.UI.Operators
                 .Subscribe(x => throttledFilterTextSubject.OnNext(x));
 
             _obsTaskOperators
+                .ObserveOn(Scheduler)
                 .CombineLatest(
                     _obsHideInactive,
                     (ops, hide) => ops.Where(op => !hide || op.IsActive)
@@ -68,15 +70,32 @@ namespace PMDS.Client.UI.Operators
                     _obsSortDescending,
                     SortOperators)
                 .Subscribe(_obsOperators);
+
+            _obsTaskOperators.ObserveOn(Scheduler).Subscribe(viewModels =>
+            {
+                foreach (var vm in viewModels)
+                {
+                    vm.Edited += (o, e) =>
+                    {
+                        _driversCache.Invalidate();
+                        Fetch();
+                    };
+                }
+            });
         }
 
         public void Fetch()
         {
+            _obsTaskOperators
+                .OnNext(new IOperatorViewModel[0]);
+
             Observable.FromAsync(_driversCache.Get)
+                .ObserveOn(Scheduler)
                 .Select(x => 
                     x.Select(op => _operatorViewModelFactory.Create(op))
                     )
-                .Subscribe(_obsTaskOperators)
+                
+                .Subscribe(x => _obsTaskOperators.OnNext(x))
                 ;
         }
 
