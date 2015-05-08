@@ -16,8 +16,8 @@ namespace PMDS.Client.UI.Operators
             _carrierEditor = carrierEditor;
         }
 
-        public string Title { get { return "Carrier"; } }
-        public Color TitleColor { get { return Colors.Blue; } }
+        public override string Title { get { return "Carrier"; } }
+        public override Color TitleColor { get { return Colors.Blue; } }
         
         protected override Task<bool> DoEdit()
         {
@@ -27,6 +27,6 @@ namespace PMDS.Client.UI.Operators
 
     public interface ICarrierViewModelFactory<TEquipment>
     {
-        ICarrierViewModel Get(ICacheableDriver<TEquipment> @operator);
+        ICarrierViewModel Create(ICacheableDriver<TEquipment> operatorInstance);
     }
 }

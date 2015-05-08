@@ -15,8 +15,8 @@ namespace PMDS.Client.UI.Operators
             _editor = editor;
         }
 
-        public string Title { get { return "Driver"; } }
-        public Color TitleColor { get { return Colors.Green; } }
+        public override string Title { get { return "Driver"; } }
+        public override Color TitleColor { get { return Colors.Green; } }
         
         protected override Task<bool> DoEdit()
         {
@@ -26,6 +26,6 @@ namespace PMDS.Client.UI.Operators
 
     public interface IDriverViewModelFactory<TEquipment>
     {
-        IDriverViewModel Get(ICacheableDriver<TEquipment> @operator);
+        IDriverViewModel Create(ICacheableDriver<TEquipment> operatorInstance);
     }
 }

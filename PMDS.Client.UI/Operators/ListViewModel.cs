@@ -71,17 +71,6 @@ namespace PMDS.Client.UI.Operators
                     SortOperators)
                 .Subscribe(_obsOperators);
 
-            _obsTaskOperators.ObserveOn(Scheduler).Subscribe(viewModels =>
-            {
-                foreach (var vm in viewModels)
-                {
-                    vm.Edited += (o, e) =>
-                    {
-                        _driversCache.Invalidate();
-                        Fetch();
-                    };
-                }
-            });
         }
 
         public void Fetch()
@@ -92,7 +81,16 @@ namespace PMDS.Client.UI.Operators
             Observable.FromAsync(_driversCache.Get)
                 .ObserveOn(Scheduler)
                 .Select(x => 
-                    x.Select(op => _operatorViewModelFactory.Create(op))
+                    x.Select(op =>
+                    {
+                        var viewModel = _operatorViewModelFactory.Create(op);
+                        viewModel.Edited += (o, e) =>
+                        {
+                            _driversCache.Invalidate();
+                            Fetch();
+                        };
+                        return viewModel;
+                    }).ToList()
                     )
                 
                 .Subscribe(x => _obsTaskOperators.OnNext(x))

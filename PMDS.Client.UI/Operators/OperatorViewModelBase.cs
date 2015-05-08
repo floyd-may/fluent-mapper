@@ -5,9 +5,11 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using Common.Silverlight.Commanding;
 using PDMS.Client.AppServices.Caching.Drivers;
 
 namespace PMDS.Client.UI.Operators
@@ -16,11 +18,14 @@ namespace PMDS.Client.UI.Operators
     {
         protected readonly ICacheableDriver<TEquipment> _operator;
         private readonly IScheduler _scheduler;
+        private readonly ICommand _editCommand;
 
         protected OperatorViewModelBase(ICacheableDriver<TEquipment> @operator, IScheduler scheduler)
         {
             _operator = @operator;
             _scheduler = scheduler;
+
+            _editCommand = new CustomDelegateCommand(x => Edit());
         }
 
         public event EventHandler Edited;
@@ -32,6 +37,9 @@ namespace PMDS.Client.UI.Operators
         public bool IsActive { get { return _operator.IsActive; } }
         public bool IsHazmatCertified { get { return _operator.IsHazmatCertified; } }
         public byte[] Photo { get { return _operator.Photo; } }
+
+        public abstract string Title { get; }
+        public abstract Color TitleColor { get; }
 
         public bool PassesFilter(string filterText)
         {
@@ -55,6 +63,10 @@ namespace PMDS.Client.UI.Operators
                     if (null != handler)
                         handler(this, EventArgs.Empty);
                 });
+        }
+
+        public ICommand EditCommand {
+            get { return _editCommand; }
         }
 
         protected abstract Task<bool> DoEdit();

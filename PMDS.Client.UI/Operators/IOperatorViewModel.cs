@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace PMDS.Client.UI.Operators
 {
@@ -11,6 +13,9 @@ namespace PMDS.Client.UI.Operators
         bool IsActive { get; }
         byte[] Photo { get; }
         bool IsHazmatCertified { get; }
+        ICommand EditCommand { get; }
+        string Title { get; }
+        Color TitleColor { get; }
 
         bool PassesFilter(string filterText);
 

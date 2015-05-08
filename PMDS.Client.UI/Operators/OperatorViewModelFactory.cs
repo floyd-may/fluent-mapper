@@ -6,12 +6,12 @@ namespace PMDS.Client.UI.Operators
     public sealed class OperatorViewModelFactory<TOperator, TEquipment> : IOperatorViewModelFactory<TOperator, TEquipment>
         where TOperator : ICacheableDriver<TEquipment>
     {
-        private readonly Func<ICacheableDriver<TEquipment>, IDriverViewModel> _driverFactory;
-        private readonly Func<ICacheableDriver<TEquipment>, ICarrierViewModel> _carrierFactory;
+        private readonly IDriverViewModelFactory<TEquipment> _driverFactory;
+        private readonly ICarrierViewModelFactory<TEquipment> _carrierFactory;
 
         public OperatorViewModelFactory(
-            Func<ICacheableDriver<TEquipment>, IDriverViewModel> driverFactory,
-            Func<ICacheableDriver<TEquipment>, ICarrierViewModel> carrierFactory
+            IDriverViewModelFactory<TEquipment> driverFactory,
+            ICarrierViewModelFactory<TEquipment> carrierFactory
             )
         {
             _driverFactory = driverFactory;
@@ -21,9 +21,9 @@ namespace PMDS.Client.UI.Operators
         public IOperatorViewModel Create(ICacheableDriver<TEquipment> @operator)
         {
             if (@operator.IsDriverRecord)
-                return _driverFactory(@operator);
+                return _driverFactory.Create(@operator);
 
-            return _carrierFactory(@operator);
+            return _carrierFactory.Create(@operator);
         }
     }
 }
