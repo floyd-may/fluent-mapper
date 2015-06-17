@@ -8,33 +8,9 @@ namespace FluentMapping
 {
     public static class TypeMappingSpecExtensions
     {
-        public static TypeMappingSpec<TTarget, TSource> IgnoringTargetProperty<TTarget, TSource, TProperty>(this TypeMappingSpec<TTarget, TSource> spec, Expression<Func<TTarget, TProperty>> propertyExpression)
-        {
-            var propertyName = ((MemberExpression)propertyExpression.Body).Member.Name;
-
-            return spec.IgnoringTargetProperty(propertyName);
-        }
-
-        public static TypeMappingSpec<TTarget, TSource> IgnoringTargetProperty<TTarget, TSource>(this TypeMappingSpec<TTarget, TSource> spec,
-            string propertyName)
-        {
-            return spec.WithTargetValues(spec.TargetValues.Where(x => x.PropertyName != propertyName));
-        }
-
-        public static TypeMappingSpec<TTarget, TSource> IgnoringSourceProperty<TTarget, TSource, TProperty>(this TypeMappingSpec<TTarget, TSource> spec, Expression<Func<TSource, TProperty>> propertyExpression)
-        {
-            var propertyName = ((MemberExpression)propertyExpression.Body).Member.Name;
-
-            return spec.IgnoringSourceProperty(propertyName);
-        }
-
-        public static TypeMappingSpec<TTarget, TSource> IgnoringSourceProperty<TTarget, TSource>(this TypeMappingSpec<TTarget, TSource> spec,
-            string propertyName)
-        {
-            return spec.WithSourceValues(spec.SourceValues.Where(x => x.PropertyName != propertyName));
-        }
-
         public static TypeMappingSpec<TTarget, TSource> WithTargetAsBuilder<TTarget, TSource>(this TypeMappingSpec<TTarget, TSource> spec)
+            where TTarget : class
+            where TSource : class
         {
             MethodInfo[] methods;
             if (typeof (TTarget).IsInterface)
@@ -56,12 +32,29 @@ namespace FluentMapping
 
         public static TypeMappingSpec<TTarget, TSource> WithConstructor<TTarget, TSource>(
             this TypeMappingSpec<TTarget, TSource> spec, Func<TTarget> constructorFunc)
+            where TTarget : class
+            where TSource : class
         {
             return new TypeMappingSpec<TTarget, TSource>(
                 spec.TargetValues.ToArray(),
                 spec.SourceValues.ToArray(),
                 spec.CustomMappings.ToArray(),
-                constructorFunc
+                dummy => constructorFunc(),
+                spec.Assembler
+                );
+        }
+
+        public static TypeMappingSpec<TTarget, TSource> WithConstructor<TTarget, TSource>(
+           this TypeMappingSpec<TTarget, TSource> spec, Func<TSource, TTarget> constructorFunc)
+            where TTarget : class
+            where TSource : class
+        {
+            return new TypeMappingSpec<TTarget, TSource>(
+                spec.TargetValues.ToArray(),
+                spec.SourceValues.ToArray(),
+                spec.CustomMappings.ToArray(),
+                constructorFunc,
+                spec.Assembler
                 );
         }
 
@@ -69,10 +62,21 @@ namespace FluentMapping
             this TypeMappingSpec<TTarget, TSource> spec,
             Expression<Action<TTarget, TSource>> customMappingExpression
             )
+            where TTarget : class
+            where TSource : class
         {
             return spec
                 .IgnoringNestedSourceProperty(customMappingExpression)
+                .WithTargetValues(spec.TargetValues.Where(v => !v.IsSupersededBy(customMappingExpression)))
                 .WithCustomMapper(customMappingExpression);
+        }
+
+        public static NullSourceBehavior<TTarget, TSource> WithNullSource<TTarget, TSource>(
+            this TypeMappingSpec<TTarget, TSource> spec)
+            where TTarget : class
+            where TSource : class
+        {
+            return new NullSourceBehavior<TTarget, TSource>(spec);
         }
     }
 }

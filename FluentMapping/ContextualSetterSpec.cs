@@ -6,6 +6,8 @@ using FluentMapping.Internal;
 namespace FluentMapping
 {
     public sealed class ContextualSetterSpec<TTarget, TSource, TProperty, TContext>
+        where TTarget : class
+        where TSource : class
     {
         private readonly Expression<Func<TTarget, TProperty>> _propertyExpression;
 
@@ -28,7 +30,8 @@ namespace FluentMapping
 
             return new ContextualTypeMappingSpec<TTarget, TSource, TContext>(
                 innerSpec, 
-                new List<Expression>(MappingSpec.ContextualMappings){ setterActionExpr }
+                new List<Expression>(MappingSpec.ContextualMappings){ setterActionExpr },
+                MappingSpec.Constructor
                 );
         }
 

@@ -6,7 +6,7 @@ namespace FluentMapping
 {
     public static class ExpressionExtensions
     {
-        public static Expression<Action<TTarget, TSource, TContext>> ToSetCall<TTarget, TSource, TProperty, TContext>(
+        public static Expression<Func<TTarget, TSource, TContext, TTarget>> ToSetCall<TTarget, TSource, TProperty, TContext>(
             this Expression<Func<TTarget, TProperty>> tgtGetExpr, Expression<Func<TSource, TContext, TProperty>> getExpr)
         {
             var sourceParam = Expression.Parameter(typeof(TSource));
@@ -19,8 +19,10 @@ namespace FluentMapping
 
             var setterExpr = Expression.Call(targetParam, targetPropertyInfo.GetSetMethod(), getInvokeExpr);
 
-            var setterActionExpr = Expression.Lambda<Action<TTarget, TSource, TContext>>(setterExpr, targetParam,
-                sourceParam, contextParam);
+            var block = Expression.Block(setterExpr, targetParam);
+
+            var setterActionExpr = Expression.Lambda<Func<TTarget, TSource, TContext, TTarget>>(
+                block, targetParam, sourceParam, contextParam);
 
             return setterActionExpr;
         }

@@ -55,6 +55,17 @@ namespace FluentMapping.Tests
             mockTarget.VerifyAll();
         }
 
+        [Test]
+        public void BuilderWithCustomMap()
+        {
+            var mapperSpec = FluentMapper
+                .ThatMaps<TargetBuilderWithMismatchTypes>().From<SourceClass>()
+                .WithTargetAsBuilder()
+                .WithCustomMap((tgt, src) => tgt.WithProp1(src.Prop1.ToString()));
+
+            Assert.That(() => mapperSpec.Create(), Throws.Nothing);
+        }
+
         public interface ITargetBuilder : IBuilder<ITargetBuilder>
         {
         }
@@ -65,7 +76,7 @@ namespace FluentMapping.Tests
             TBuilder WithProp2(string val);
         }
 
-        public sealed class TargetBuilder
+        public class TargetBuilder
         {
             public int Prop1 { get; private set; }
             public string Prop2 { get; private set; }
@@ -114,6 +125,30 @@ namespace FluentMapping.Tests
                     Prop1 = Prop1,
                     Prop2 = val,
                     Writable = Writable
+                };
+            }
+        }
+
+        public class TargetBuilderWithMismatchTypes
+        {
+            public string Prop1 { get; private set; }
+            public string Prop2 { get; private set; }
+
+            public TargetBuilderWithMismatchTypes WithProp1(string val)
+            {
+                return new TargetBuilderWithMismatchTypes
+                {
+                    Prop1 = val,
+                    Prop2 = Prop2
+                };
+            }
+
+            public TargetBuilderWithMismatchTypes WithProp2(string val)
+            {
+                return new TargetBuilderWithMismatchTypes
+                {
+                    Prop1 = Prop1,
+                    Prop2 = val
                 };
             }
         }

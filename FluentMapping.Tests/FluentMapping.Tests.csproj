@@ -52,7 +52,9 @@
     <Compile Include="BuilderConventionTests.cs" />
     <Compile Include="ContextualMappingTests.cs" />
     <Compile Include="CustomMappingTests.cs" />
+    <Compile Include="DefaultAssemblerTests.cs" />
     <Compile Include="FluentMapperBasicTests.cs" />
+    <Compile Include="NullSourceAssemblerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SourceValueTests.cs" />
     <Compile Include="TargetValueTests.cs" />

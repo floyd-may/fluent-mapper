@@ -46,6 +46,11 @@ namespace FluentMapping
             return Expression.Lambda(blockExpr, targetParamExpr, sourceParamExpr);
         }
 
+        public bool IsSupersededBy(LambdaExpression expression)
+        {
+            return false;
+        }
+
         public override string ToString()
         {
             return Description;

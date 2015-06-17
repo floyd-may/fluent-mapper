@@ -21,6 +21,27 @@ namespace FluentMapping.Tests
         }
 
         [Test]
+        public void ThrowsForNull()
+        {
+            var mapper = FluentMapper
+                .ThatMaps<SimpleTarget>().From<SimpleSource>()
+                .Create();
+
+            Assert.That(() => mapper.Map(null), Throws.Exception);
+        }
+
+        [Test]
+        public void NullSourceBehavior()
+        {
+            var mapper = FluentMapper
+                .ThatMaps<SimpleTarget>().From<SimpleSource>()
+                .WithNullSource().ReturnNull()
+                .Create();
+
+            Assert.That(mapper.Map(null), Is.Null);
+        }
+
+        [Test]
         public void ThrowsForUnmatchedTarget()
         {
             var mapperSpec = FluentMapper

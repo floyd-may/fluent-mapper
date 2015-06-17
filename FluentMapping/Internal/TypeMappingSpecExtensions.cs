@@ -11,12 +11,15 @@ namespace FluentMapping.Internal
             WithSourceValues<TTarget, TSource>(
                 this TypeMappingSpec<TTarget, TSource> spec, 
                 IEnumerable<SourceValue<TSource>> sourceValues)
+            where TTarget : class
+            where TSource : class
         {
             return new TypeMappingSpec<TTarget, TSource>(
                 spec.TargetValues.ToArray(),
                 sourceValues.ToArray(),
                 spec.CustomMappings.ToArray(),
-                spec.ConstructorFunc
+                spec.ConstructorFunc,
+                spec.Assembler
                 );
         }
 
@@ -24,23 +27,31 @@ namespace FluentMapping.Internal
             WithTargetValues<TTarget, TSource>(
                 this TypeMappingSpec<TTarget, TSource> spec,
                 IEnumerable<ITargetValue<TTarget>> targetValues)
+            where TTarget : class
+            where TSource : class
         {
             return new TypeMappingSpec<TTarget, TSource>(
                 targetValues.ToArray(),
                 spec.SourceValues.ToArray(),
                 spec.CustomMappings.ToArray(),
-                spec.ConstructorFunc
+                spec.ConstructorFunc,
+                spec.Assembler
                 );
         }
 
         internal static TypeMappingSpec<TTarget, TSource>
-            WithCustomMapper<TTarget, TSource>(this TypeMappingSpec<TTarget, TSource> spec, Expression customMapper)
+            WithCustomMapper<TTarget, TSource>(
+                this TypeMappingSpec<TTarget, TSource> spec, 
+                Expression customMapper)
+            where TTarget : class
+            where TSource : class
         {
             return new TypeMappingSpec<TTarget, TSource>(
                 spec.TargetValues.ToArray(),
                 spec.SourceValues.ToArray(),
                 new List<Expression>(spec.CustomMappings) { customMapper }.ToArray(),
-                spec.ConstructorFunc
+                spec.ConstructorFunc,
+                spec.Assembler
                 );
         }
 
@@ -48,6 +59,8 @@ namespace FluentMapping.Internal
             IgnoringNestedSourceProperty<TTarget, TSource>(
                 this TypeMappingSpec<TTarget, TSource> spec,
                 Expression sourceExpression)
+            where TTarget : class
+            where TSource : class
         {
             var visitor = new MemberVisitor<TSource>();
             visitor.Visit(sourceExpression);

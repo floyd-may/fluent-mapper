@@ -4,20 +4,16 @@ namespace FluentMapping
 {
     internal sealed class SimpleMapper<TTarget, TSource> : IMapper<TTarget, TSource>
     {
-        private readonly Func<TTarget> _factory;
-        private readonly Func<TTarget, TSource, TTarget> _mappingAction;
+        private readonly Func<TSource, TTarget> _factory;
 
-        public SimpleMapper(Func<TTarget> factory, Func<TTarget, TSource, TTarget> mappingAction)
+        public SimpleMapper(Func<TSource, TTarget> factory)
         {
             _factory = factory;
-            _mappingAction = mappingAction;
         }
 
         public TTarget Map(TSource source)
         {
-            var target = _factory();
-
-            return _mappingAction(target, source);
+            return _factory(source);
         }
     }
 }

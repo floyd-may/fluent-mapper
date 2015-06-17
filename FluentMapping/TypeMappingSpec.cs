@@ -6,14 +6,17 @@ using System.Reflection;
 
 namespace FluentMapping
 {
-    public sealed class TypeMappingSpec<TTarget, TSource>
+    public sealed partial class TypeMappingSpec<TTarget, TSource>
+        where TTarget : class
+        where TSource : class
     {
         public IEnumerable<SourceValue<TSource>> SourceValues { get; private set; }
         public IEnumerable<ITargetValue<TTarget>> TargetValues { get; private set; }
         public IEnumerable<Expression> CustomMappings { get; private set; }
-        public Func<TTarget> ConstructorFunc { get; private set; }
+        public Func<TSource, TTarget> ConstructorFunc { get; private set; }
+        public IAssembler Assembler { get; private set; }
 
-        public TypeMappingSpec() : this(GetDefaultTargetValues(), GetDefaultSourceValues(), new Expression[0], null)
+        public TypeMappingSpec() : this(GetDefaultTargetValues(), GetDefaultSourceValues(), new Expression[0], null, null)
         {
         }
 
@@ -21,13 +24,15 @@ namespace FluentMapping
             ITargetValue<TTarget>[] targetValues, 
             SourceValue<TSource>[] sourceValues, 
             Expression[] customMappings,
-            Func<TTarget> constructorFunc
+            Func<TSource, TTarget> constructorFunc,
+            IAssembler assembler
             )
         {
             TargetValues = targetValues;
             SourceValues = sourceValues;
             CustomMappings = customMappings ?? Enumerable.Empty<Expression>();
             ConstructorFunc = constructorFunc;
+            Assembler = assembler ?? new DefaultAssembler();
         }
 
         public IMapper<TTarget, TSource> Create()
@@ -36,17 +41,23 @@ namespace FluentMapping
 
             var constructor = GetConstructor();
 
+            var mapperFunc = GetMapperFunc();
+
+            return Assembler.Assemble(constructor, mapperFunc);
+        }
+
+        public Func<TTarget, TSource, TTarget> GetMapperFunc()
+        {
             var targetParam = Expression.Parameter(typeof (TTarget));
             var sourceParam = Expression.Parameter(typeof (TSource));
 
             var setterActions = TargetValues.OrderBy(x => x.PropertyName)
-                
                 .Zip(SourceValues.OrderBy(x => x.PropertyName), (tgt, src) => tgt.CreateSetter(src.CreateGetter()))
                 .Concat(CustomMappings)
                 .Select(x => EnsureReturnsTarget(x))
                 .ToArray()
                 ;
-            
+
             var accumulatedLambda = Expression.Invoke(setterActions.First(), targetParam, sourceParam);
 
             foreach (var setterExpr in setterActions.Skip(1))
@@ -54,20 +65,21 @@ namespace FluentMapping
                 accumulatedLambda = Expression.Invoke(setterExpr, accumulatedLambda, sourceParam);
             }
 
-            var mapperAction = Expression.Lambda<Func<TTarget, TSource, TTarget>>(accumulatedLambda, targetParam, sourceParam);
+            var mapperFunc = Expression.Lambda<Func<TTarget, TSource, TTarget>>(accumulatedLambda, targetParam, sourceParam);
 
-            return new SimpleMapper<TTarget, TSource>(constructor, mapperAction.Compile());
+            return mapperFunc.Compile();
         }
 
-        private Func<TTarget> GetConstructor()
+        public Func<TSource, TTarget> GetConstructor()
         {
             if(ConstructorFunc != null)
                 return ConstructorFunc;
 
             var ctorInfo = typeof (TTarget).GetConstructor(new Type [0]);
 
-            return Expression.Lambda<Func<TTarget>>(
-                Expression.New(ctorInfo)
+            return Expression.Lambda<Func<TSource, TTarget>>(
+                Expression.New(ctorInfo),
+                Expression.Parameter(typeof(TSource))
                 ).Compile();
         }
 

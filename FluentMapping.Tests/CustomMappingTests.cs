@@ -37,7 +37,9 @@ namespace FluentMapping.Tests
                 mapper.TargetValues.Concat(new[]{ targetValue.Object }).ToArray(),
                 mapper.SourceValues.ToArray(),
                 mapper.CustomMappings.ToArray(),
-                mapper.ConstructorFunc);
+                mapper.ConstructorFunc,
+                mapper.Assembler
+                );
 
             Assert.That(() => mapper.Create(), Throws.Exception);
 
@@ -105,7 +107,7 @@ namespace FluentMapping.Tests
             Assert.That(result.B, Is.EqualTo("A"));
         }
 
-        private IMapper<TTarget, SimpleSource> CreateMapperForTarget<TTarget>() where TTarget : ITarget
+        private IMapper<TTarget, SimpleSource> CreateMapperForTarget<TTarget>() where TTarget : class, ITarget
         {
             return FluentMapper
                 .ThatMaps<TTarget>().From<SimpleSource>()

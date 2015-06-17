@@ -3,6 +3,8 @@
 namespace FluentMapping
 {
     public class OpenGenericMapper<TTarget, TSource> : IMapper<TTarget, TSource>
+        where TTarget : class
+        where TSource : class
     {
         private readonly Lazy<IMapper<TTarget, TSource>> _childMapper; 
 

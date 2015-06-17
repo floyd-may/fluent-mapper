@@ -5,6 +5,8 @@ using FluentMapping.Internal;
 namespace FluentMapping
 {
     public sealed class SetterSpec<TTarget, TSource, TProperty>
+        where TTarget : class
+        where TSource : class
     {
         public SetterSpec(TypeMappingSpec<TTarget, TSource> spec, Expression<Func<TTarget, TProperty>> tgtPropExpression)
         {
