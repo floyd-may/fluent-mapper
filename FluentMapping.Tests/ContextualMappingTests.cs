@@ -30,16 +30,13 @@ namespace FluentMapping.Tests
             ctor.Setup(x => x(It.IsAny<StringifyContext>())).Returns(() => new TargetWithExtraStringC());
 
                 var mapper = FluentMapper
-                .ThatMaps<TargetWithExtraStringC>().From<SourceWithExtraDoubleC>()
+                .ThatMaps<SimpleTarget>().From<SimpleSource>()
                 .UsingContext<StringifyContext>()
                 .WithConstructor(ctx => ctor.Object(ctx))
-                .ThatSets(x => x.C).From((src, ctx) => ctx.ArbitraryMethod(src.C))
                 .Create();
 
-            var source = new SourceWithExtraDoubleC();
-            var result = mapper.Map(source, new StringifyContext());
+            mapper.Map(new SimpleSource(), new StringifyContext());
 
-            Assert.That(result.C, Is.EqualTo("4.2"));
             ctor.Verify(x => x(It.IsAny<StringifyContext>()));
         }
 

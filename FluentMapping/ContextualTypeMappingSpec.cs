@@ -39,6 +39,21 @@ namespace FluentMapping
             var sourceParam = Expression.Parameter(typeof (TSource));
             var contextParam = Expression.Parameter(typeof (TContext));
 
+            var mappingLambda = CreateMappingLambda(targetParam, sourceParam, contextParam);
+
+            var constructor = GetConstructor();
+            var innerMapper = InnerSpec.GetMapperFunc();
+
+            return InnerSpec.Assembler.Assemble(constructor,
+                (tgt, src, ctx) => mappingLambda(innerMapper(tgt, src), src, ctx));
+        }
+
+        private Func<TTarget, TSource, TContext, TTarget> CreateMappingLambda(ParameterExpression targetParam, ParameterExpression sourceParam,
+            ParameterExpression contextParam)
+        {
+            if (!ContextualMappings.Any())
+                return (tgt, src, ctx) => tgt;
+
             var accumulatedLambda = Expression.Invoke(ContextualMappings.First(), targetParam, sourceParam, contextParam);
 
             foreach (var setterExpr in ContextualMappings.Skip(1))
@@ -47,17 +62,12 @@ namespace FluentMapping
             }
 
             var mappingLambda = Expression.Lambda<Func<TTarget, TSource, TContext, TTarget>>(
-                    accumulatedLambda, 
-                    targetParam, 
-                    sourceParam, 
-                    contextParam)
+                accumulatedLambda,
+                targetParam,
+                sourceParam,
+                contextParam)
                 .Compile();
-
-            var constructor = GetConstructor();
-            var innerMapper = InnerSpec.GetMapperFunc();
-
-            return InnerSpec.Assembler.Assemble(constructor,
-                (tgt, src, ctx) => mappingLambda(innerMapper(tgt, src), src, ctx));
+            return mappingLambda;
         }
 
         private Func<TSource, TContext, TTarget> GetConstructor()
