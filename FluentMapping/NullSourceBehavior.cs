@@ -24,5 +24,16 @@ namespace FluentMapping
                 new NullSourceAssembler()
                 );
         }
+
+        public TypeMappingSpec<TTarget, TSource> ReturnEmptyObject()
+        {
+            return new TypeMappingSpec<TTarget, TSource>(
+                Spec.TargetValues.ToArray(),
+                Spec.SourceValues.ToArray(),
+                Spec.CustomMappings.ToArray(),
+                Spec.ConstructorFunc,
+                new EmptyObjectAssembler()
+                );
+        }
     }
 }

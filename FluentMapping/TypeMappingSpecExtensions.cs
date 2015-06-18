@@ -30,34 +30,6 @@ namespace FluentMapping
             return spec.WithTargetValues(spec.TargetValues.Concat(builderTargetValues));
         }
 
-        public static TypeMappingSpec<TTarget, TSource> WithConstructor<TTarget, TSource>(
-            this TypeMappingSpec<TTarget, TSource> spec, Func<TTarget> constructorFunc)
-            where TTarget : class
-            where TSource : class
-        {
-            return new TypeMappingSpec<TTarget, TSource>(
-                spec.TargetValues.ToArray(),
-                spec.SourceValues.ToArray(),
-                spec.CustomMappings.ToArray(),
-                dummy => constructorFunc(),
-                spec.Assembler
-                );
-        }
-
-        public static TypeMappingSpec<TTarget, TSource> WithConstructor<TTarget, TSource>(
-           this TypeMappingSpec<TTarget, TSource> spec, Func<TSource, TTarget> constructorFunc)
-            where TTarget : class
-            where TSource : class
-        {
-            return new TypeMappingSpec<TTarget, TSource>(
-                spec.TargetValues.ToArray(),
-                spec.SourceValues.ToArray(),
-                spec.CustomMappings.ToArray(),
-                constructorFunc,
-                spec.Assembler
-                );
-        }
-
         public static TypeMappingSpec<TTarget, TSource> WithCustomMap<TTarget, TSource>(
             this TypeMappingSpec<TTarget, TSource> spec,
             Expression<Action<TTarget, TSource>> customMappingExpression

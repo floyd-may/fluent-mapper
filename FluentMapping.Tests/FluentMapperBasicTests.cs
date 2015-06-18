@@ -42,6 +42,21 @@ namespace FluentMapping.Tests
         }
 
         [Test]
+        public void NullSourceEmptyObject()
+        {
+            var mapper = FluentMapper
+                .ThatMaps<SimpleTarget>().From<SimpleSource>()
+                .WithNullSource().ReturnEmptyObject()
+                .Create();
+
+            var result = mapper.Map(null);
+
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.A, Is.Null);
+            Assert.That(result.B, Is.EqualTo(0));
+        }
+
+        [Test]
         public void ThrowsForUnmatchedTarget()
         {
             var mapperSpec = FluentMapper
@@ -166,16 +181,15 @@ namespace FluentMapping.Tests
             Assert.That(result.B, Is.EqualTo(11));
         }
 
-
-
-        public interface ISimpleSource : ISource
+        [Test]
+        public void MapsIfAssignable()
         {
-        }
+            var mapper = FluentMapper
+                .ThatMaps<TargetWithInterfaceProperty>()
+                .From<SourceWithConcreteProperty>()
+                .Create();
 
-        public interface ISource
-        {
-            string A { get; }
-            int B { get; }
+            var result = mapper.Map(new SourceWithConcreteProperty());
         }
 
         public class SimpleSource : ISimpleSource
@@ -188,6 +202,18 @@ namespace FluentMapping.Tests
         {
             public string A { get; set; }
             public int B { get; set; }
+        }
+
+        public class TargetWithInterfaceProperty
+        {
+            public ISimpleSource A { get; set; }
+        }
+
+        public class SourceWithConcreteProperty
+        {
+            public SimpleSource A {
+                get { return new SimpleSource(); }
+            }
         }
 
         public sealed class TargetWithExtraStringC : SimpleTarget
@@ -208,6 +234,16 @@ namespace FluentMapping.Tests
         public sealed class SourceWithExtraStringD : SimpleSource
         {
             public string D { get { return "a value"; } }
+        }
+
+        public interface ISimpleSource : ISource
+        {
+        }
+
+        public interface ISource
+        {
+            string A { get; }
+            int B { get; }
         }
 
         

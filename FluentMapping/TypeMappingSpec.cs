@@ -48,6 +48,8 @@ namespace FluentMapping
 
         public Func<TTarget, TSource, TTarget> GetMapperFunc()
         {
+            ValidateMapping();
+
             var targetParam = Expression.Parameter(typeof (TTarget));
             var sourceParam = Expression.Parameter(typeof (TSource));
 
@@ -119,7 +121,7 @@ namespace FluentMapping
                     src,
                     tgt
                 })
-                .Where(x => x.src.ValueType != x.tgt.ValueType);
+                .Where(x => !x.tgt.ValueType.IsAssignableFrom(x.src.ValueType));
 
             foreach (var mismatch in mismatchedTypes)
             {
@@ -145,16 +147,6 @@ namespace FluentMapping
             var message = string.Format("Source {0} is unmatched.",
                 value.Description);
             throw new Exception(message);
-        }
-
-        private static string GetDescription<T>(IValue<T> value)
-        {
-            return string.Format(
-                "{0} {1}.{2}",
-                value.ValueType.Name,
-                typeof(T).Name,
-                value.PropertyName
-                );
         }
 
         private static SourceValue<TSource>[] GetDefaultSourceValues()

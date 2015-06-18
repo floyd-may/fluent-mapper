@@ -34,6 +34,8 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
+    <Compile Include="TypeMappingSpec.Constructors.cs" />
+    <Compile Include="EmptyObjectAssembler.cs" />
     <Compile Include="TypeMappingSpec.IgnoreValues.cs" />
   </ItemGroup>
   <ItemGroup>
