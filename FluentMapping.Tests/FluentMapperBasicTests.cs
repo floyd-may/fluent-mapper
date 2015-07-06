@@ -192,13 +192,36 @@ namespace FluentMapping.Tests
             var result = mapper.Map(new SourceWithConcreteProperty());
         }
 
+        [Test]
+        public void ThrowsIfNoConstructor()
+        {
+            var spec = FluentMapper.ThatMaps<ISimpleTarget>().From<SimpleSource>();
+
+            Assert.That(() => spec.Create(), Throws.Exception);
+
+            try
+            {
+                spec.Create();
+            }
+            catch (Exception ex)
+            {
+                Assert.That(ex.Message, Is.EqualTo("Unable to find constructor for type 'ISimpleTarget'."));
+            }
+        }
+
         public class SimpleSource : ISimpleSource
         {
             public string A { get { return "A"; } }
             public int B { get { return 11; } }
         }
 
-        public class SimpleTarget
+        public interface ISimpleTarget
+        {
+            string A { get; set; }
+            int B { get; set; }
+        }
+
+        public class SimpleTarget : ISimpleTarget
         {
             public string A { get; set; }
             public int B { get; set; }

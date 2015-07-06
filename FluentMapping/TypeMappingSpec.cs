@@ -79,6 +79,9 @@ namespace FluentMapping
 
             var ctorInfo = typeof (TTarget).GetConstructor(new Type [0]);
 
+            if(ctorInfo == null)
+                throw new InvalidOperationException(string.Format("Unable to find constructor for type '{0}'.", typeof(TTarget).Name));
+
             return Expression.Lambda<Func<TSource, TTarget>>(
                 Expression.New(ctorInfo),
                 Expression.Parameter(typeof(TSource))
