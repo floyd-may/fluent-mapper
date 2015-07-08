@@ -26,5 +26,7 @@ namespace FluentMapping
                 .IgnoringNestedSourceProperty(getExpression)
                 .WithCustomMapper(setter);
         }
+
+        
     }
 }

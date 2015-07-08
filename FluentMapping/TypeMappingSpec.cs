@@ -60,6 +60,9 @@ namespace FluentMapping
                 .ToArray()
                 ;
 
+            if (!setterActions.Any())
+                return (tgt, src) => tgt;
+
             var accumulatedLambda = Expression.Invoke(setterActions.First(), targetParam, sourceParam);
 
             foreach (var setterExpr in setterActions.Skip(1))
@@ -99,6 +102,20 @@ namespace FluentMapping
             return new SetterSpec<TTarget, TSource, TProperty>(this, propertyExpression);
         }
 
+        public IEnumerable<ITargetValue<TTarget>> GetUnmappedTargetValues()
+        {
+            var sourcesByName = SourceValues.ToDictionary(x => x.PropertyName);
+
+            return TargetValues.Where(x => !sourcesByName.ContainsKey(x.PropertyName));
+        }
+
+        public IEnumerable<SourceValue<TSource>> GetUnmappedSourceValues()
+        {
+            var targetValuesByName = TargetValues.ToDictionary(x => x.PropertyName);
+
+            return SourceValues.Where(x => !targetValuesByName.ContainsKey(x.PropertyName));
+        }
+
         private void ValidateMapping()
         {
             var targetNames = TargetValues.Select(x => x.PropertyName);
@@ -106,9 +123,9 @@ namespace FluentMapping
 
             var unmatchedTargets = targetNames.Except(sourceNames);
 
-            foreach (var targetProperty in unmatchedTargets)
+            foreach (var targetProperty in GetUnmappedTargetValues())
             {
-                ThrowUnmatchedTarget(TargetValues.First(x => x.PropertyName == targetProperty));
+                ThrowUnmatchedTarget(targetProperty);
             }
 
             var unmatchedSources = sourceNames.Except(targetNames);

@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
-namespace FluentMapping.Tests
+namespace FluentMapping.Tests.Unit
 {
     [TestFixture]
     public sealed class TargetValueTests

@@ -34,6 +34,8 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
+    <Compile Include="ExpandIntoNestedTargetSpec.cs" />
+    <Compile Include="MapperBase.cs" />
     <Compile Include="TypeMappingSpec.Constructors.cs" />
     <Compile Include="EmptyObjectAssembler.cs" />
     <Compile Include="TypeMappingSpec.IgnoreValues.cs" />
@@ -63,6 +65,7 @@
     <Compile Include="SourceValue.cs" />
     <Compile Include="TargetValue.cs" />
     <Compile Include="TypeMappingSpec.cs" />
+    <Compile Include="TypeMappingSpec.Nesting.cs" />
     <Compile Include="TypeMappingSpecExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

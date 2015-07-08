@@ -1,42 +1,46 @@
-﻿using System;
+using System;
 using Moq;
 using NUnit.Framework;
 
-namespace FluentMapping.Tests
+namespace FluentMapping.Tests.Unit
 {
     [TestFixture]
-    public sealed class NullSourceAssemblerTests
+    public sealed class EmptyObjectAssemblerTests
     {
         [Test]
-        public void AssembleNonNull()
+        public void AssembleNotNull()
         {
+            var source = "source";
+
             var ctor = new Mock<Func<string, string>>(MockBehavior.Strict);
-            ctor.Setup(x => x("source")).Returns("ctor result");
+            ctor.Setup(x => x(source)).Returns("ctor result");
 
             var mapFunc = new Mock<Func<string, string, string>>(MockBehavior.Strict);
-            mapFunc.Setup(x => x("ctor result", "source")).Returns("map result");
+            mapFunc.Setup(x => x("ctor result", source)).Returns("map result");
 
-            var testee = new NullSourceAssembler();
+            var testee = new EmptyObjectAssembler();
             var mapper = testee.Assemble(ctor.Object, mapFunc.Object);
 
-            var result = mapper.Map("source");
+            var result = mapper.Map(source);
 
             Assert.That(result, Is.EqualTo("map result"));
         }
 
         [Test]
-        public void AssembleWithNull()
+        public void AssembleNullSource()
         {
-            // note no setups on these mocks
             var ctor = new Mock<Func<string, string>>(MockBehavior.Strict);
+            ctor.Setup(x => x(null)).Returns("ctor result");
+
+            // note the lack of setup here on the mapFunc - it should get skipped
             var mapFunc = new Mock<Func<string, string, string>>(MockBehavior.Strict);
 
-            var testee = new NullSourceAssembler();
+            var testee = new EmptyObjectAssembler();
             var mapper = testee.Assemble(ctor.Object, mapFunc.Object);
 
             var result = mapper.Map(null);
 
-            Assert.That(result, Is.Null);
+            Assert.That(result, Is.EqualTo("ctor result"));
         }
 
         [Test]
@@ -51,7 +55,7 @@ namespace FluentMapping.Tests
             var mapFunc = new Mock<Func<string, string, DateTime, string>>(MockBehavior.Strict);
             mapFunc.Setup(x => x("ctor result", source, context)).Returns("map result");
 
-            var testee = new NullSourceAssembler();
+            var testee = new EmptyObjectAssembler();
             var mapper = testee.Assemble(ctor.Object, mapFunc.Object);
 
             var result = mapper.Map(source, context);
@@ -62,16 +66,18 @@ namespace FluentMapping.Tests
         [Test]
         public void AssembleContextWithNull()
         {
-            // note no setups on these mocks
             var ctor = new Mock<Func<string, DateTime, string>>(MockBehavior.Strict);
+            ctor.Setup(x => x(null, It.IsAny<DateTime>())).Returns("ctor result");
+
+            // note no setups on the map function
             var mapFunc = new Mock<Func<string, string, DateTime, string>>(MockBehavior.Strict);
 
-            var testee = new NullSourceAssembler();
+            var testee = new EmptyObjectAssembler();
             var mapper = testee.Assemble(ctor.Object, mapFunc.Object);
 
             var result = mapper.Map(null, DateTime.Now);
 
-            Assert.That(result, Is.Null);
+            Assert.That(result, Is.EqualTo("ctor result"));
         }
     }
 }

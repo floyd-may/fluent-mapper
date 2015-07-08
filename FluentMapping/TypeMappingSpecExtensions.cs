@@ -43,6 +43,19 @@ namespace FluentMapping
                 .WithCustomMapper(customMappingExpression);
         }
 
+        public static TypeMappingSpec<TTarget, TSource> WithCustomMap<TTarget, TSource>(
+            this TypeMappingSpec<TTarget, TSource> spec,
+            Expression<Func<TTarget, TSource, TTarget>> customMappingExpression
+            )
+            where TTarget : class
+            where TSource : class
+        {
+            return spec
+                .IgnoringNestedSourceProperty(customMappingExpression)
+                .WithTargetValues(spec.TargetValues.Where(v => !v.IsSupersededBy(customMappingExpression)))
+                .WithCustomMapper(customMappingExpression);
+        }
+
         public static NullSourceBehavior<TTarget, TSource> WithNullSource<TTarget, TSource>(
             this TypeMappingSpec<TTarget, TSource> spec)
             where TTarget : class

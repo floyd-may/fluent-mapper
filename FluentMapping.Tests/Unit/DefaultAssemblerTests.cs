@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using Moq;
 using NUnit.Framework;
 
-namespace FluentMapping.Tests
+namespace FluentMapping.Tests.Unit
 {
     [TestFixture]
     public sealed class DefaultAssemblerTests
