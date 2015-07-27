@@ -9,6 +9,8 @@
   build:
     project: fluent-mapper.sln
     verbosity: minimal
+  after_build:
+  - nuget pack FluentMapping\FluentMapping.csproj
   test:
     assemblies:
       - '**\*.tests.dll'
