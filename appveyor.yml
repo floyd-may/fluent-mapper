@@ -14,11 +14,12 @@
     verbosity: minimal
   after_build:
   - nuget pack -Version %APPVEYOR_BUILD_VERSION% FluentMapping\FluentMapping.csproj
-  - nuget push FluentMapper.%APPVEYOR_BUILD_VERSION%.nupkg -ApiKey %nuget_api_key% -Verbosity detailed
   test:
     assemblies:
       - '**\*.tests.dll'
-
+  on_success:
+  - nuget push FluentMapper.%APPVEYOR_BUILD_VERSION%.nupkg -ApiKey %nuget_api_key% -Verbosity detailed
+  
 -
   version: 1.0.{build}
   before_build:
