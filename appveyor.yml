@@ -3,6 +3,9 @@
     only:
       - master
   configuration: Release
+  environment:
+    nuget_api_key:
+      secure: oRzXYnLhiuEhrTafW4jGry9+IRoscwyh48Rpq5CDNoupclJEktj6J97aVatWxdN+
   version: 1.0.{build}
   before_build:
   - nuget restore
@@ -10,16 +13,11 @@
     project: fluent-mapper.sln
     verbosity: minimal
   after_build:
-  - nuget pack -Version %APPVEYOR_BUILD_VERSION% -Verbosity detailed FluentMapping\FluentMapping.csproj
+  - nuget pack -Version %APPVEYOR_BUILD_VERSION% FluentMapping\FluentMapping.csproj
+  - nuget push FluentMapper.%APPVEYOR_BUILD_VERSION%.nupkg -ApiKey %nuget_api_key% -Verbosity detailed
   test:
     assemblies:
       - '**\*.tests.dll'
-  deploy:
-    provider: NuGet
-    api_key:
-      secure: oRzXYnLhiuEhrTafW4jGry9+IRoscwyh48Rpq5CDNoupclJEktj6J97aVatWxdN+
-    skip_symbols: true
-    artifact: '**\*.nupkg'
 
 -
   version: 1.0.{build}
