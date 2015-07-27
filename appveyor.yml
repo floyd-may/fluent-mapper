@@ -10,7 +10,7 @@
     project: fluent-mapper.sln
     verbosity: minimal
   after_build:
-  - nuget pack -Version %APPVEYOR_BUILD_VERSION% FluentMapping\FluentMapping.csproj
+  - nuget pack -Version %APPVEYOR_BUILD_VERSION% -Verbosity detailed FluentMapping\FluentMapping.csproj
   test:
     assemblies:
       - '**\*.tests.dll'
