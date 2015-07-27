@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>FluentMapper</id>
+    <version>$version$</version>
+    <title>FluentMapper</title>
+    <authors>MessageXpress</authors>
+    <owners>MessageXpress</owners>
+    <projectUrl>https://github.com/messagexpress/fluent-mapper</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A fluent object-to-object mapper.</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2015</copyright>
+    <tags></tags>
+  </metadata>
+</package>
