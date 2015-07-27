@@ -19,7 +19,7 @@
     api_key:
       secure: oRzXYnLhiuEhrTafW4jGry9+IRoscwyh48Rpq5CDNoupclJEktj6J97aVatWxdN+
     skip_symbols: true
-    artifact: /FluentMapper.*\.nupkg/
+    artifact: '**\*.nupkg'
 
 -
   version: 1.0.{build}
