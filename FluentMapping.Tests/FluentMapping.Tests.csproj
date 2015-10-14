@@ -51,7 +51,7 @@
   <ItemGroup>
     <Compile Include="BuilderConventionTests.cs" />
     <Compile Include="ContextualMappingTests.cs" />
-    <Compile Include="CustomMappingTests.cs" />
+    <Compile Include="PropertyMappingTests.cs" />
     <Compile Include="ExpandIntoTests.cs" />
     <Compile Include="FluentMapperBasicTests.cs" />
     <Compile Include="MapperBaseTests.cs" />
