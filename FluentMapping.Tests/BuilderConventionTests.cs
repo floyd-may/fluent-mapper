@@ -61,7 +61,7 @@ namespace FluentMapping.Tests
             var mapperSpec = FluentMapper
                 .ThatMaps<TargetBuilderWithMismatchTypes>().From<SourceClass>()
                 .WithTargetAsBuilder()
-                .WithCustomMap((tgt, src) => tgt.WithProp1(src.Prop1.ToString()));
+                .WithMappingAction((tgt, src) => tgt.WithProp1(src.Prop1.ToString()));
 
             Assert.That(() => mapperSpec.Create(), Throws.Nothing);
         }

@@ -6,10 +6,10 @@ using NUnit.Framework;
 namespace FluentMapping.Tests
 {
     [TestFixture]
-    public sealed class CustomMappingTests
+    public sealed class PropertyMappingTests
     {
         [Test]
-        public void CustomSetterMatchingType()
+        public void SetterMatchingType()
         {
             var mapper = FluentMapper
                 .ThatMaps<SimpleTarget>().From<SimpleSource>()
@@ -54,7 +54,7 @@ namespace FluentMapping.Tests
         }
 
         [Test]
-        public void CustomSetterWithTwoSourceProperties()
+        public void SetterWithTwoSourceProperties()
         {
             var mapper = FluentMapper
                 .ThatMaps<SimpleTarget>().From<SourceWithStringC>()
@@ -68,7 +68,7 @@ namespace FluentMapping.Tests
         }
 
         [Test]
-        public void CustomSetterViaTargetInterface()
+        public void SetterViaTargetInterface()
         {
             var mapper = CreateMapperForTarget<SimpleTarget>();
 
@@ -79,7 +79,7 @@ namespace FluentMapping.Tests
         }
 
         [Test]
-        public void CustomSetterViaSourceInterface()
+        public void SetterViaSourceInterface()
         {
             var mapper = FluentMapper
                 .ThatMaps<SimpleTarget>().From<ISource>()
@@ -97,7 +97,7 @@ namespace FluentMapping.Tests
         {
             var mapper = FluentMapper
                 .ThatMaps<SimpleTarget>().From<SimpleSource>()
-                .WithCustomMap((tgt, src) => tgt.SetB(src.A))
+                .WithMappingAction((tgt, src) => tgt.SetB(src.A))
                 .IgnoringTargetProperty(tgt => tgt.B)
                 .Create();
 

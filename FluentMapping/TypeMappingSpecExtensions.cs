@@ -30,7 +30,7 @@ namespace FluentMapping
             return spec.WithTargetValues(spec.TargetValues.Concat(builderTargetValues));
         }
 
-        public static TypeMappingSpec<TTarget, TSource> WithCustomMap<TTarget, TSource>(
+        public static TypeMappingSpec<TTarget, TSource> WithMappingAction<TTarget, TSource>(
             this TypeMappingSpec<TTarget, TSource> spec,
             Expression<Action<TTarget, TSource>> customMappingExpression
             )
@@ -43,7 +43,7 @@ namespace FluentMapping
                 .WithCustomMapper(customMappingExpression);
         }
 
-        public static TypeMappingSpec<TTarget, TSource> WithCustomMap<TTarget, TSource>(
+        public static TypeMappingSpec<TTarget, TSource> WithMappingAction<TTarget, TSource>(
             this TypeMappingSpec<TTarget, TSource> spec,
             Expression<Func<TTarget, TSource, TTarget>> customMappingExpression
             )
