@@ -1,4 +1,10 @@
 # fluent-mapper
+
+FluentMapper is an object-to-object mapping library, similar in purpose to both AutoMapper and TinyMapper. However, FluentMapper is designed to offer two key benefits:
+
+* FluentMapper is configured via a fluent API (hence the name)
+* FluentMapper is opinionated [wiki](https://github.com/floyd-may/fluent-mapper/wiki)
+
 A fluent object-to-object mapper for C#, inspired by Martin Fowler's [data mapper](http://martinfowler.com/eaaCatalog/dataMapper.html).
 
 # Code Overview
